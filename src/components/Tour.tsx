@@ -64,6 +64,18 @@ export function Tour() {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
+  useEffect(() => {
+    const active = step >= 0 && step < STEPS.length;
+    if (!active) return;
+    const t = setTimeout(() => {
+      document.body.style.overflow = "hidden";
+    }, 400);
+    return () => {
+      clearTimeout(t);
+      document.body.style.overflow = "";
+    };
+  }, [step]);
+
   function finish() {
     setStep(-1);
     try {
@@ -105,11 +117,17 @@ export function Tour() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.1 }}
             className="absolute w-[320px] max-w-[calc(100vw-32px)] rounded-2xl border border-black/[0.07] bg-white p-5 shadow-lifted dark:border-white/[0.1] dark:bg-surface-dark-muted"
-            style={{
-              top: below ? rect.bottom + 16 : undefined,
-              bottom: below ? undefined : window.innerHeight - rect.top + 16,
-              left: Math.min(Math.max(rect.left + rect.width / 2 - 160, 16), window.innerWidth - 336),
-            }}
+            style={
+              window.innerWidth < 640
+                ? { bottom: 84, left: 16, right: 16, width: "auto" }
+                : {
+                    top: below ? rect.bottom + 16 : Math.max(rect.top - 216, 16),
+                    left: Math.min(
+                      Math.max(rect.left + rect.width / 2 - 160, 16),
+                      window.innerWidth - 336,
+                    ),
+                  }
+            }
           >
             <p className="section-label">
               Step {step + 1} of {STEPS.length}
