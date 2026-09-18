@@ -3,8 +3,35 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { routeIntent, type AssistantReply } from "@/features/assistant/intentRouter";
-import { askGemini, geminiEnabled } from "@/features/assistant/gemini";
+import { askGemini, geminiEnabled, type GeminiAction } from "@/features/assistant/gemini";
+import { findAirport } from "@/data/airports";
 import { cn } from "@/lib/cn";
+
+function geminiActionToLink(a: GeminiAction | null | undefined): AssistantReply["actions"] {
+  if (!a || a.kind === "none") return undefined;
+  if (a.kind === "flights" && a.to) {
+    const from = findAirport(a.from ?? "Bengaluru");
+    const to = findAirport(a.to);
+    if (!from || !to) return undefined;
+    const params = new URLSearchParams({
+      from: `${from.city} (${from.iata})`,
+      to: `${to.city} (${to.iata})`,
+      pax: "1",
+      cabin: "economy",
+    });
+    if (a.depart && /^\d{4}-\d{2}-\d{2}$/.test(a.depart)) params.set("depart", a.depart);
+    return [{ label: `Search ${from.iata} → ${to.iata}`, to: `/flights?${params.toString()}` }];
+  }
+  if ((a.kind === "stays" || a.kind === "cars") && a.city) {
+    const city = a.city.trim();
+    return [{ label: `${a.kind === "stays" ? "Stays" : "Cars"} in ${city}`, to: `/${a.kind}?city=${encodeURIComponent(city)}` }];
+  }
+  if (a.kind === "explore") {
+    const from = findAirport(a.from ?? a.city ?? "Bengaluru") ?? findAirport("Bengaluru")!;
+    return [{ label: `Explore from ${from.city}`, to: `/explore?from=${encodeURIComponent(`${from.city} (${from.iata})`)}` }];
+  }
+  return undefined;
+}
 
 interface Message {
   id: number;
@@ -48,10 +75,12 @@ export function AssistantPage() {
     const scripted = routeIntent(text);
     let reply: AssistantReply = scripted;
 
-    // Deterministic intents (with action buttons) stay scripted; everything else goes to Gemini.
+    // Deterministic intents (with action buttons) stay scripted; everything else goes to
+    // Gemini, which extracts a structured search action alongside its reply.
     if (geminiEnabled && !scripted.actions?.length) {
       try {
-        reply = { text: await askGemini(history, text) };
+        const structured = await askGemini(history, text);
+        reply = { text: structured.reply, actions: geminiActionToLink(structured.action) };
       } catch {
         reply = scripted;
       }
