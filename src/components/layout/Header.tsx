@@ -54,7 +54,7 @@ export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
                     <span className="relative flex items-center gap-1.5">
                       {item.label}
                       {item.to === "/trips" && tripCount > 0 && (
-                        <span className="grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">
+                        <span className="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-brand px-1 text-center text-[10px] font-bold leading-none text-white">
                           {tripCount}
                         </span>
                       )}
