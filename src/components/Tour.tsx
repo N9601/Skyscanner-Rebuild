@@ -64,6 +64,27 @@ export function Tour() {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
+  // Layout keeps shifting after mount (fonts, images, entry animations), so re-track the
+  // target every frame-ish tick while the tour is up instead of trusting one measurement.
+  useEffect(() => {
+    if (step < 0 || step >= STEPS.length) return;
+    const id = setInterval(() => {
+      const el = document.querySelector(STEPS[step].target);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setRect((prev) =>
+        prev &&
+        Math.abs(prev.top - r.top) < 1.5 &&
+        Math.abs(prev.left - r.left) < 1.5 &&
+        Math.abs(prev.width - r.width) < 1.5 &&
+        Math.abs(prev.height - r.height) < 1.5
+          ? prev
+          : r,
+      );
+    }, 180);
+    return () => clearInterval(id);
+  }, [step]);
+
   useEffect(() => {
     const active = step >= 0 && step < STEPS.length;
     if (!active) return;
