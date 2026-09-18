@@ -28,7 +28,7 @@ export function CarsPage() {
 
   if (!city) {
     return (
-      <div className="route-fade container py-12">
+      <div className="container py-12">
         <h1 className="font-display text-3xl font-extrabold tracking-tight">Rent a car</h1>
         <p className="mt-1.5 text-ink-muted dark:text-ink-inverse/60">
           Compare suppliers at pickup points across the map.
@@ -42,7 +42,7 @@ export function CarsPage() {
   }
 
   return (
-    <div className="route-fade container py-8">
+    <div className="container py-8">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="section-label">Cars</p>

@@ -59,7 +59,7 @@ const FEATURES = [
 
 export function HomePage() {
   return (
-    <div className="route-fade">
+    <div>
       <section className="container pt-6 md:pt-10">
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-brand-50 via-sky-50 to-indigo-50 px-6 pb-28 pt-14 dark:from-brand-900/40 dark:via-surface-dark-muted dark:to-indigo-950/40 md:px-14 md:pb-32 md:pt-20">
           <div className="absolute inset-0 bg-hero-grid bg-[size:44px_44px] opacity-60 dark:opacity-20" aria-hidden />

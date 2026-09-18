@@ -30,7 +30,7 @@ export function AlertsPage() {
   }
 
   return (
-    <div className="route-fade container py-8">
+    <div className="container py-8">
       <header className="mb-8">
         <p className="section-label">Price alerts</p>
         <h1 className="mt-1.5 font-display text-3xl font-extrabold tracking-tight">

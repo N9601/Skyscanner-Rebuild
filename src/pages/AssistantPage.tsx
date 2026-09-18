@@ -72,7 +72,7 @@ export function AssistantPage() {
   }
 
   return (
-    <div className="route-fade container py-10">
+    <div className="container py-10">
       <div className="mx-auto max-w-2xl">
         <header className="mb-6 text-center">
           <h1 className="font-display text-2xl font-extrabold tracking-tight">Trip assistant</h1>

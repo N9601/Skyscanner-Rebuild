@@ -79,7 +79,7 @@ export function FlightsPage() {
 
   if (!query.from || !query.to) {
     return (
-      <div className="route-fade container py-12">
+      <div className="container py-12">
         <h1 className="font-display text-3xl font-extrabold tracking-tight">Find a flight</h1>
         <p className="mt-1.5 text-ink-muted dark:text-ink-inverse/60">
           Pick where you're going and we'll line up every option.
@@ -93,7 +93,7 @@ export function FlightsPage() {
   }
 
   return (
-    <div className="route-fade container py-8">
+    <div className="container py-8">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="section-label">Flights</p>

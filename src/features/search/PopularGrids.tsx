@@ -4,7 +4,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { formatINR } from "@/lib/mockApi";
 import { cn } from "@/lib/cn";
 
-const ROUTES = [
+export const ROUTES = [
   { from: ["Bengaluru", "BLR"], to: ["Goa", "GOI"], price: 3499 },
   { from: ["New Delhi", "DEL"], to: ["Mumbai", "BOM"], price: 2899 },
   { from: ["Mumbai", "BOM"], to: ["Dubai", "DXB"], price: 11499 },

@@ -63,7 +63,7 @@ export function TripsPage() {
   const budgetPct = Math.min(1, total / budget);
 
   return (
-    <div className="route-fade container py-8">
+    <div className="container py-8">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="section-label">Trip plan</p>

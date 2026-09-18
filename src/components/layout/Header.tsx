@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Moon, Sparkles, Sun } from "lucide-react";
+import { Moon, Search, Sparkles, Sun } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/cn";
 import { springy } from "@/lib/motion";
@@ -15,7 +15,7 @@ const NAV = [
   { to: "/alerts", label: "Alerts" },
 ];
 
-export function Header() {
+export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
   const { pathname } = useLocation();
   const { dark, toggle } = useTheme();
   const tripCount = useTrips((s) => s.items.length);
@@ -67,6 +67,15 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenPalette}
+            aria-label="Open command palette"
+            className="hidden h-9 items-center gap-2 rounded-full border border-black/[0.08] px-3 text-xs font-medium text-ink-soft transition-colors hover:text-ink dark:border-white/[0.1] dark:hover:text-ink-inverse sm:flex"
+          >
+            <Search size={13} aria-hidden />
+            <kbd className="font-sans">Ctrl K</kbd>
+          </button>
           <button
             type="button"
             onClick={toggle}
