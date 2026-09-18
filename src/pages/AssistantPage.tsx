@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Send, Sparkles } from "lucide-react";
 import { routeIntent, type AssistantReply } from "@/features/assistant/intentRouter";
+import { askGemini, geminiEnabled } from "@/features/assistant/gemini";
 import { cn } from "@/lib/cn";
 
 interface Message {
@@ -38,19 +39,32 @@ export function AssistantPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, typing]);
 
-  function ask(text: string) {
+  async function ask(text: string) {
     if (!text.trim() || typing) return;
+    const history = messages.map((m) => ({ role: m.role, text: m.text }));
     setMessages((m) => [...m, { id: nextId++, role: "user", text }]);
     setInput("");
     setTyping(true);
-    const reply = routeIntent(text);
-    setTimeout(() => {
-      setMessages((m) => [
-        ...m,
-        { id: nextId++, role: "assistant", text: reply.text, actions: reply.actions },
-      ]);
-      setTyping(false);
-    }, 650 + Math.random() * 500);
+
+    const scripted = routeIntent(text);
+    let reply: AssistantReply = scripted;
+
+    // Deterministic intents (with action buttons) stay scripted; everything else goes to Gemini.
+    if (geminiEnabled && !scripted.actions?.length) {
+      try {
+        reply = { text: await askGemini(history, text) };
+      } catch {
+        reply = scripted;
+      }
+    } else {
+      await new Promise((r) => setTimeout(r, 650 + Math.random() * 500));
+    }
+
+    setMessages((m) => [
+      ...m,
+      { id: nextId++, role: "assistant", text: reply.text, actions: reply.actions },
+    ]);
+    setTyping(false);
   }
 
   function submit(e: FormEvent) {
@@ -69,7 +83,9 @@ export function AssistantPage() {
               </span>
               <div>
                 <p className="font-display font-bold">Trip assistant</p>
-                <p className="text-xs text-white/50">Scripted demo · travel only</p>
+                <p className="text-xs text-white/50">
+                  {geminiEnabled ? "Gemini powered · travel only" : "Scripted demo · travel only"}
+                </p>
               </div>
             </div>
             <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
@@ -174,7 +190,9 @@ export function AssistantPage() {
         </div>
 
         <p className="mt-4 text-center text-xs text-ink-soft">
-          Responses are scripted for the offline demo. No data leaves this device.
+          {geminiEnabled
+            ? "Route and budget intents answer instantly in-app; open questions go to Gemini."
+            : "Responses are scripted for the offline demo. Add a Gemini key in .env to go live."}
         </p>
       </div>
     </div>
