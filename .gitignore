@@ -36,3 +36,8 @@ test-results/
 
 # Scratch
 scratchpad/
+
+# TS build artifacts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
