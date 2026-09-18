@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useOutlet } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BottomNav } from "./BottomNav";
@@ -44,17 +44,14 @@ export function Layout() {
       </div>
       <Header onOpenPalette={() => setPaletteOpen(true)} />
       <main className="relative z-[1] flex-1 pb-16 md:pb-0">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {outlet}
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {outlet}
+        </motion.div>
       </main>
       <Footer />
       <BottomNav />
