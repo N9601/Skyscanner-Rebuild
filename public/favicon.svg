@@ -1,14 +1,20 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="akv-bg" x1="4" y1="2" x2="44" y2="46" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#4A9BF5"/>
-      <stop offset="1" stop-color="#04478F"/>
+    <linearGradient id="akv-bg" x1="4" y1="2" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="0.5" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="akv-swoosh" x1="6" y1="38" x2="42" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </linearGradient>
   </defs>
   <rect width="48" height="48" rx="14" fill="url(#akv-bg)"/>
-  <circle cx="24" cy="24" r="14.5" stroke="white" stroke-opacity="0.28" stroke-width="1.5"/>
-  <path d="M8.5 33.5c7.5 2.5 19 .5 26-8" stroke="white" stroke-opacity="0.55" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="0.5 5"/>
-  <path d="M11.5 26.8 38.5 11l-7.8 26-4.6-10.1-14.6-.1Z" fill="white"/>
-  <path d="m26.1 26.9 12.4-15.9-7.8 26-4.6-10.1Z" fill="#BFDBFE"/>
-  <path d="m26.1 26.9 12.4-15.9-15.9 12.5 3.5 3.4Z" fill="#93C5FD"/>
+  <path d="M6 36c9 6.5 25 5 36-8" stroke="url(#akv-swoosh)" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M41.4 9.4 7.4 21.3l15.3 6.8Z" fill="#FFFFFF"/>
+  <path d="M41.4 9.4 22.7 28.1l6.8 15.3Z" fill="#BFDBFE"/>
+  <path d="M41.4 9.4 22.7 28.1l3.6 2.2Z" fill="#93C5FD"/>
+  <path d="m10 10.2.9 2 2 .9-2 .9-.9 2-.9-2-2-.9 2-.9Z" fill="#fff" opacity="0.9"/>
 </svg>
