@@ -1,5 +1,7 @@
+import { motion } from "framer-motion";
 import { Plane, Hotel, Car } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { springy } from "@/lib/motion";
 
 export type TripType = "flights" | "stays" | "cars";
 
@@ -17,7 +19,11 @@ export function TripTypeTabs({
   onChange: (v: TripType) => void;
 }) {
   return (
-    <div role="tablist" aria-label="Trip type" className="inline-flex rounded-xl bg-surface-muted p-1 dark:bg-surface-dark-muted">
+    <div
+      role="tablist"
+      aria-label="Trip type"
+      className="inline-flex rounded-full border border-black/[0.05] bg-surface-muted p-1 dark:border-white/[0.06] dark:bg-surface-dark"
+    >
       {TABS.map(({ id, label, icon: Icon }) => {
         const active = value === id;
         return (
@@ -28,14 +34,24 @@ export function TripTypeTabs({
             aria-selected={active}
             onClick={() => onChange(id)}
             className={cn(
-              "inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+              "relative inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               active
-                ? "bg-white text-ink shadow-sm dark:bg-surface-dark dark:text-ink-inverse"
-                : "text-ink-muted hover:text-ink dark:text-ink-inverse/70 dark:hover:text-ink-inverse",
+                ? "text-ink dark:text-ink-inverse"
+                : "text-ink-muted hover:text-ink dark:text-ink-inverse/60 dark:hover:text-ink-inverse",
             )}
           >
-            <Icon size={16} aria-hidden />
-            {label}
+            {active && (
+              <motion.span
+                layoutId="trip-tab"
+                transition={springy}
+                className="absolute inset-0 rounded-full bg-white shadow-sm dark:bg-surface-dark-muted"
+                aria-hidden
+              />
+            )}
+            <span className="relative flex items-center gap-1.5">
+              <Icon size={15} aria-hidden />
+              {label}
+            </span>
           </button>
         );
       })}

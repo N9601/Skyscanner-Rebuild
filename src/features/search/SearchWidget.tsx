@@ -1,17 +1,25 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, ArrowLeftRight, MapPin, Calendar, Users } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeftRight, Calendar, Search, Users } from "lucide-react";
+import { AirportField } from "./AirportField";
 import { TripTypeTabs, type TripType } from "./TripTypeTabs";
+import { cn } from "@/lib/cn";
 
 type Cabin = "economy" | "premium" | "business" | "first";
 
-export function SearchWidget() {
+function isoPlus(days: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+export function SearchWidget({ compact }: { compact?: boolean }) {
   const [tripType, setTripType] = useState<TripType>("flights");
-  const [origin, setOrigin] = useState("");
+  const [origin, setOrigin] = useState("Bengaluru (BLR)");
   const [destination, setDestination] = useState("");
-  const [depart, setDepart] = useState("");
-  const [ret, setRet] = useState("");
+  const [depart, setDepart] = useState(isoPlus(7));
+  const [ret, setRet] = useState(isoPlus(12));
   const [travelers, setTravelers] = useState(1);
   const [cabin, setCabin] = useState<Cabin>("economy");
   const navigate = useNavigate();
@@ -23,35 +31,48 @@ export function SearchWidget() {
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const params = new URLSearchParams({
-      from: origin,
-      to: destination,
-      depart,
-      return: ret,
-      pax: String(travelers),
-      cabin,
-    });
-    navigate(`/${tripType}?${params.toString()}`);
+    if (tripType === "flights") {
+      const params = new URLSearchParams({
+        from: origin,
+        to: destination,
+        depart,
+        return: ret,
+        pax: String(travelers),
+        cabin,
+      });
+      navigate(`/flights?${params.toString()}`);
+    } else {
+      const params = new URLSearchParams({
+        city: destination,
+        from: depart,
+        to: ret,
+        pax: String(travelers),
+      });
+      navigate(`/${tripType}?${params.toString()}`);
+    }
   }
 
   return (
-    <form
+    <motion.form
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.21, 0.61, 0.35, 1], delay: 0.15 }}
       onSubmit={submit}
-      className="card space-y-4 border border-black/5 p-5 dark:border-white/10 md:p-6"
       aria-label="Search"
+      className="w-full"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <TripTypeTabs value={tripType} onChange={setTripType} />
-        <div className="flex items-center gap-3 text-sm text-ink-muted dark:text-ink-inverse/70">
-          <label className="flex items-center gap-2">
-            <Users size={16} aria-hidden />
+        <div className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-1.5 rounded-full border border-black/[0.07] bg-white px-3 py-1.5 dark:border-white/[0.1] dark:bg-surface-dark-muted">
+            <Users size={14} aria-hidden className="text-ink-soft" />
             <input
               type="number"
               min={1}
               max={9}
               value={travelers}
               onChange={(e) => setTravelers(Number(e.target.value))}
-              className="w-14 rounded-md border border-black/10 bg-white px-2 py-1 dark:border-white/10 dark:bg-surface-dark-muted"
+              className="w-8 bg-transparent text-center font-medium outline-none"
               aria-label="Travelers"
             />
           </label>
@@ -59,7 +80,7 @@ export function SearchWidget() {
             <select
               value={cabin}
               onChange={(e) => setCabin(e.target.value as Cabin)}
-              className="rounded-md border border-black/10 bg-white px-2 py-1 dark:border-white/10 dark:bg-surface-dark-muted"
+              className="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 font-medium outline-none dark:border-white/[0.1] dark:bg-surface-dark-muted"
               aria-label="Cabin class"
             >
               <option value="economy">Economy</option>
@@ -71,80 +92,124 @@ export function SearchWidget() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto_1fr_1fr_1fr_auto]">
-        <Field label="From" icon={<MapPin size={16} aria-hidden />}>
-          <input
-            required
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
-            placeholder="City or airport"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-ink-muted/60"
-          />
-        </Field>
+      <div
+        className={cn(
+          "grid items-stretch overflow-visible rounded-2xl border border-black/[0.06] bg-white/90 shadow-lifted backdrop-blur dark:border-white/[0.09] dark:bg-surface-dark-muted/90",
+          "grid-cols-1 divide-y divide-black/[0.06] dark:divide-white/[0.07]",
+          tripType === "flights"
+            ? "md:grid-cols-[1.25fr_auto_1.25fr_1fr_1fr_auto] md:divide-x md:divide-y-0"
+            : "md:grid-cols-[1.6fr_1fr_1fr_auto] md:divide-x md:divide-y-0",
+          compact && "shadow-card",
+        )}
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          {tripType === "flights" && (
+            <motion.div
+              key="origin"
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="min-w-0"
+            >
+              <AirportField bare label="From" value={origin} onChange={setOrigin} required />
+            </motion.div>
+          )}
+          {tripType === "flights" && (
+            <motion.div
+              key="swap"
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="hidden items-center px-1 md:flex"
+            >
+              <button
+                type="button"
+                onClick={swap}
+                aria-label="Swap origin and destination"
+                className="grid h-9 w-9 place-items-center rounded-full border border-black/[0.08] bg-white text-ink-muted transition-transform hover:rotate-180 hover:text-brand dark:border-white/[0.12] dark:bg-surface-dark dark:text-ink-inverse/70"
+                style={{ transitionDuration: "350ms" }}
+              >
+                <ArrowLeftRight size={15} aria-hidden />
+              </button>
+            </motion.div>
+          )}
 
-        <button
-          type="button"
-          onClick={swap}
-          aria-label="Swap origin and destination"
-          className="hidden self-end rounded-full border border-black/10 p-2 hover:bg-surface-muted dark:border-white/10 dark:hover:bg-surface-dark-muted md:inline-flex"
-        >
-          <ArrowLeftRight size={16} aria-hidden />
-        </button>
+          <motion.div
+            key="dest"
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="min-w-0"
+          >
+            <AirportField
+              bare
+              label={tripType === "flights" ? "To" : tripType === "stays" ? "Where to?" : "Pick-up city"}
+              value={destination}
+              onChange={setDestination}
+              placeholder={tripType === "flights" ? "City or airport" : "City"}
+              required
+            />
+          </motion.div>
 
-        <Field label="To" icon={<MapPin size={16} aria-hidden />}>
-          <input
-            required
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="City or airport"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-ink-muted/60"
-          />
-        </Field>
+          <motion.div key="depart" layout className="min-w-0">
+            <DateCell
+              label={tripType === "stays" ? "Check-in" : tripType === "cars" ? "From" : "Depart"}
+              value={depart}
+              onChange={setDepart}
+              required
+            />
+          </motion.div>
 
-        <Field label="Depart" icon={<Calendar size={16} aria-hidden />}>
-          <input
-            required
-            type="date"
-            value={depart}
-            onChange={(e) => setDepart(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none"
-          />
-        </Field>
+          <motion.div key="return" layout className="min-w-0">
+            <DateCell
+              label={tripType === "stays" ? "Check-out" : tripType === "cars" ? "Until" : "Return"}
+              value={ret}
+              onChange={setRet}
+            />
+          </motion.div>
 
-        <Field label="Return" icon={<Calendar size={16} aria-hidden />}>
-          <input
-            type="date"
-            value={ret}
-            onChange={(e) => setRet(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none"
-          />
-        </Field>
-
-        <Button type="submit" size="lg" className="md:h-full">
-          <span>Search</span>
-          <ArrowRight size={16} aria-hidden />
-        </Button>
+          <motion.div key="go" layout className="flex items-center justify-end p-2.5 md:justify-center">
+            <button
+              type="submit"
+              aria-label="Search"
+              className="grid h-12 w-full place-items-center rounded-xl bg-ink text-white shadow-lg transition-all hover:scale-[1.03] hover:shadow-xl active:scale-95 dark:bg-white dark:text-ink md:h-12 md:w-12 md:rounded-full"
+            >
+              <Search size={18} aria-hidden />
+            </button>
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </form>
+    </motion.form>
   );
 }
 
-function Field({
+function DateCell({
   label,
-  icon,
-  children,
+  value,
+  onChange,
+  required,
 }: {
   label: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
 }) {
   return (
-    <label className="flex flex-col gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 dark:border-white/10 dark:bg-surface-dark-muted">
-      <span className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-ink-muted dark:text-ink-inverse/60">
-        {icon}
+    <label className="flex h-full flex-col justify-center gap-1 px-5 py-3.5">
+      <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+        <Calendar size={13} aria-hidden />
         {label}
       </span>
-      {children}
+      <input
+        type="date"
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-transparent text-sm font-medium outline-none"
+      />
     </label>
   );
 }
