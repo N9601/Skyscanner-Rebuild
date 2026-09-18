@@ -25,6 +25,8 @@ export interface FlightOffer {
   co2kg: number;
   greener: boolean;
   cabin: CabinClass;
+  distanceKm: number;
+  domestic: boolean;
 }
 
 export interface DayPrice {

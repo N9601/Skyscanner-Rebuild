@@ -6,6 +6,8 @@ import type {
   SearchQuery,
   StayOffer,
 } from "@/types";
+import { AIRPORTS, findAirport } from "@/data/airports";
+import { airlinesForRoute } from "@/data/airlines";
 
 function hashSeed(input: string): number {
   let h = 1779033703 ^ input.length;
@@ -29,16 +31,18 @@ function mulberry32(seed: number) {
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const AIRLINES = [
-  { name: "IndiSky", code: "IS" },
-  { name: "Vistara Blue", code: "VB" },
-  { name: "AirWave", code: "AW" },
-  { name: "Horizon Air", code: "HA" },
-  { name: "CloudNine", code: "CN" },
-  { name: "JetStream", code: "JS" },
-];
+const DOMESTIC_HUBS = ["DEL", "BOM", "BLR", "HYD"];
+const INTL_HUBS = ["DXB", "DOH", "IST", "SIN", "AUH"];
 
-const STOP_CITIES = ["DEL", "BOM", "HYD", "MAA", "CCU", "DXB", "SIN"];
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
 
 const CABIN_MULTIPLIER: Record<CabinClass, number> = {
   economy: 1,
@@ -57,39 +61,58 @@ function minutesToTime(min: number) {
   return `${pad(h)}:${pad(m)}`;
 }
 
+function routeInfo(q: SearchQuery) {
+  const from = findAirport(q.from) ?? AIRPORTS[2];
+  const to = findAirport(q.to) ?? AIRPORTS[0];
+  const distanceKm = Math.max(200, haversineKm(from.lat, from.lon, to.lat, to.lon));
+  const domestic = from.country === "India" && to.country === "India";
+  return { from, to, distanceKm, domestic };
+}
+
 export async function fetchFlights(q: SearchQuery): Promise<FlightOffer[]> {
   await delay(450 + Math.random() * 350);
   const rand = mulberry32(hashSeed(`${q.from}|${q.to}|${q.depart}|${q.cabin}`.toLowerCase()));
-  const count = 12 + Math.floor(rand() * 5);
-  const basePrice = 2600 + Math.floor(rand() * 5200);
+  const { from, to, distanceKm, domestic } = routeInfo(q);
+  const longHaul = distanceKm > 4000;
+  const pool = airlinesForRoute(domestic, longHaul);
+  const count = 11 + Math.floor(rand() * 6);
+  const perKm = domestic ? 2.9 : longHaul ? 6.4 : 4.8;
+  const floor = domestic ? 2200 : longHaul ? 24000 : 9000;
+  const cruiseKmh = longHaul ? 870 : 780;
 
   const offers: FlightOffer[] = Array.from({ length: count }, (_, i) => {
-    const airline = AIRLINES[Math.floor(rand() * AIRLINES.length)];
-    const stops = (rand() < 0.45 ? 0 : rand() < 0.8 ? 1 : 2) as 0 | 1 | 2;
-    const departMin = 300 + Math.floor(rand() * 1020);
-    const durationMin = 95 + stops * (60 + Math.floor(rand() * 140)) + Math.floor(rand() * 90);
+    const airline = pool[Math.floor(rand() * pool.length)];
+    const nonstopBias = distanceKm < 1600 ? 0.75 : longHaul ? 0.3 : 0.55;
+    const stops = (rand() < nonstopBias ? 0 : rand() < 0.85 ? 1 : 2) as 0 | 1 | 2;
+    const departMin = 300 + Math.floor(rand() * 1080);
+    const flightMin = Math.round((distanceKm / cruiseKmh) * 60) + 35;
+    const durationMin = flightMin + stops * (70 + Math.floor(rand() * 150));
     const price = Math.round(
-      (basePrice + rand() * 3800 + stops * -420 + durationMin * 1.4) *
+      Math.max(floor, distanceKm * perKm * (0.82 + rand() * 0.5) - stops * (domestic ? 380 : 2400)) *
         CABIN_MULTIPLIER[q.cabin] *
         (1 + (q.pax - 1) * 0.02),
     );
-    const co2kg = Math.round(88 + durationMin * 0.62 + stops * 26 + rand() * 30);
+    const co2kg = Math.round(distanceKm * (longHaul ? 0.075 : 0.095) + stops * 32 + rand() * 24);
+    const hubs = domestic ? DOMESTIC_HUBS : INTL_HUBS;
+    const viable = hubs.filter((h) => h !== from.iata && h !== to.iata);
     return {
       id: `fl-${i}-${airline.code}`,
       airline: airline.name,
       airlineCode: airline.code,
       flightNo: `${airline.code} ${100 + Math.floor(rand() * 900)}`,
-      from: q.from.toUpperCase(),
-      to: q.to.toUpperCase(),
+      from: from.iata,
+      to: to.iata,
       departTime: minutesToTime(departMin),
       arriveTime: minutesToTime(departMin + durationMin),
       durationMin,
       stops,
-      stopCity: stops > 0 ? STOP_CITIES[Math.floor(rand() * STOP_CITIES.length)] : undefined,
+      stopCity: stops > 0 ? viable[Math.floor(rand() * viable.length)] : undefined,
       price,
       co2kg,
       greener: false,
       cabin: q.cabin,
+      distanceKm,
+      domestic,
     };
   });
 
@@ -102,13 +125,14 @@ export async function fetchFlights(q: SearchQuery): Promise<FlightOffer[]> {
 export async function fetchPriceCalendar(q: SearchQuery): Promise<DayPrice[]> {
   await delay(300);
   const rand = mulberry32(hashSeed(`cal|${q.from}|${q.to}`.toLowerCase()));
-  const base = 2800 + Math.floor(rand() * 4200);
+  const { distanceKm, domestic } = routeInfo(q);
+  const base = Math.max(domestic ? 2400 : 9500, distanceKm * (domestic ? 2.7 : 5.6));
   const anchor = q.depart ? new Date(q.depart) : new Date();
   const days: DayPrice[] = Array.from({ length: 9 }, (_, i) => {
     const d = new Date(anchor);
     d.setDate(d.getDate() + (i - 4));
-    const wave = Math.sin(i * 1.2) * 620;
-    const price = Math.round(base + wave + rand() * 900);
+    const wave = Math.sin(i * 1.2) * base * 0.14;
+    const price = Math.round(base + wave + rand() * base * 0.2);
     return { date: d.toISOString().slice(0, 10), price, cheapest: false };
   });
   const min = Math.min(...days.map((d) => d.price));
