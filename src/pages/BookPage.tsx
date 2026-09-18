@@ -8,6 +8,30 @@ import { findAirport } from "@/data/airports";
 
 type Stage = "connecting" | "review" | "handoff";
 
+const AIRLINE_SITES: Record<string, string> = {
+  "6E": "https://www.goindigo.in",
+  AI: "https://www.airindia.com",
+  UK: "https://www.airvistara.com",
+  SG: "https://www.spicejet.com",
+  QP: "https://www.akasaair.com",
+  IX: "https://www.airindiaexpress.com",
+  EK: "https://www.emirates.com",
+  QR: "https://www.qatarairways.com",
+  EY: "https://www.etihad.com",
+  SQ: "https://www.singaporeair.com",
+  TG: "https://www.thaiairways.com",
+  MH: "https://www.malaysiaairlines.com",
+  CX: "https://www.cathaypacific.com",
+  BA: "https://www.britishairways.com",
+  LH: "https://www.lufthansa.com",
+  AF: "https://www.airfrance.com",
+  KL: "https://www.klm.com",
+  TK: "https://www.turkishairlines.com",
+  UA: "https://www.united.com",
+  QF: "https://www.qantas.com",
+  UL: "https://www.srilankan.com",
+};
+
 export function BookPage() {
   const { state } = useLocation() as { state: { offer?: FlightOffer; pax?: number } | null };
   const offer = state?.offer;
@@ -16,7 +40,7 @@ export function BookPage() {
 
   useEffect(() => {
     if (!offer) return;
-    const t = setTimeout(() => setStage("review"), 1400);
+    const t = setTimeout(() => setStage("review"), 600);
     return () => clearTimeout(t);
   }, [offer]);
 
@@ -133,11 +157,12 @@ export function BookPage() {
                   View trip plan
                 </Link>
                 <a
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href={AIRLINE_SITES[offer.airlineCode] ?? "https://www.google.com/travel/flights"}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-ghost rounded-full border border-black/[0.08] px-5 dark:border-white/[0.1]"
                 >
-                  Provider site
+                  Open {offer.airline}
                   <ExternalLink size={14} aria-hidden />
                 </a>
               </div>
