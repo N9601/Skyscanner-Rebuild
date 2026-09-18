@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Check, Leaf, Plus, Star } from "lucide-react";
+import { Check, Leaf, List, Map as MapIcon, Plus, Star } from "lucide-react";
 import { fetchStays, formatINR } from "@/lib/mockApi";
 import { SearchWidget } from "@/features/search/SearchWidget";
 import { PopularCities } from "@/features/search/PopularGrids";
@@ -11,6 +11,8 @@ import { useTrips } from "@/stores/trips";
 import { cn } from "@/lib/cn";
 
 type StaySort = "recommended" | "price" | "rating";
+
+const StaysMap = lazy(() => import("@/features/stays/StaysMap"));
 
 export function StaysPage() {
   const [params] = useSearchParams();
@@ -22,6 +24,8 @@ export function StaysPage() {
   });
   const [sort, setSort] = useState<StaySort>("recommended");
   const [ecoOnly, setEcoOnly] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [selectedId, setSelectedId] = useState<string>();
   const { items, add, remove } = useTrips();
 
   const visible = useMemo(() => {
@@ -61,6 +65,19 @@ export function StaysPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setShowMap((v) => !v)}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+              showMap
+                ? "border-brand bg-brand-50 text-brand dark:bg-brand-700/25"
+                : "border-black/[0.08] text-ink-muted dark:border-white/[0.1] dark:text-ink-inverse/70",
+            )}
+          >
+            {showMap ? <List size={14} aria-hidden /> : <MapIcon size={14} aria-hidden />}
+            {showMap ? "List" : "Map"}
+          </button>
+          <button
+            type="button"
             role="switch"
             aria-checked={ecoOnly}
             onClick={() => setEcoOnly((v) => !v)}
@@ -87,7 +104,36 @@ export function StaysPage() {
         </div>
       </header>
 
-      <section aria-busy={isLoading} className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={cn(showMap && "grid gap-5 lg:grid-cols-2")}>
+      {showMap && (
+        <div className="sticky top-20 z-10 order-first h-72 overflow-hidden rounded-2xl border border-black/[0.07] dark:border-white/[0.1] lg:order-last lg:h-[calc(100vh-160px)]">
+          <Suspense
+            fallback={
+              <div className="grid h-full w-full animate-pulse place-items-center bg-surface-muted text-sm text-ink-soft dark:bg-surface-dark-muted">
+                Loading map
+              </div>
+            }
+          >
+            <StaysMap
+              stays={visible}
+              selectedId={selectedId}
+              onSelect={(id) => {
+                setSelectedId(id);
+                document
+                  .getElementById(`stay-${id}`)
+                  ?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            />
+          </Suspense>
+        </div>
+      )}
+      <section
+        aria-busy={isLoading}
+        className={cn(
+          "grid grid-cols-1 gap-5",
+          showMap ? "sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3",
+        )}
+      >
         {isLoading &&
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="card h-72 animate-pulse bg-surface-muted/50 dark:bg-surface-dark-muted/50" />
@@ -98,12 +144,19 @@ export function StaysPage() {
           return (
             <motion.div
               key={s.id}
+              id={`stay-${s.id}`}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.06, 0.4) }}
+              onClick={() => setSelectedId(s.id)}
             >
               <TiltCard max={5} className="h-full">
-                <article className="card card-hover flex h-full flex-col overflow-hidden p-0">
+                <article
+                  className={cn(
+                    "card card-hover flex h-full flex-col overflow-hidden p-0",
+                    selectedId === s.id && "ring-2 ring-brand",
+                  )}
+                >
                   <div className={cn("relative h-36 bg-gradient-to-br", s.gradient)}>
                     <span className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" aria-hidden />
                     {s.ecoCertified && (
@@ -169,6 +222,7 @@ export function StaysPage() {
           );
         })}
       </section>
+      </div>
     </div>
   );
 }

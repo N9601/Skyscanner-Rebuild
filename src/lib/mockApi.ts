@@ -166,9 +166,12 @@ const STAY_GRADIENTS = [
 export async function fetchStays(city: string): Promise<StayOffer[]> {
   await delay(420 + Math.random() * 300);
   const rand = mulberry32(hashSeed(`stay|${city}`.toLowerCase()));
+  const center = findAirport(city) ?? AIRPORTS.find((a) => a.iata === "GOI")!;
   return Array.from({ length: 9 }, (_, i) => {
     const amenities = AMENITY_POOL.filter(() => rand() > 0.55).slice(0, 4);
     return {
+      lat: center.lat + (rand() - 0.5) * 0.14,
+      lon: center.lon + (rand() - 0.5) * 0.14,
       id: `st-${i}`,
       name: STAY_NAMES[Math.floor(rand() * STAY_NAMES.length)],
       area: AREAS[Math.floor(rand() * AREAS.length)],
