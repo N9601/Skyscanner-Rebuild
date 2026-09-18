@@ -55,14 +55,14 @@ export function PopularRoutes() {
   );
 }
 
-const CITY_GRADIENTS: Record<string, string> = {
-  Goa: "from-amber-400 to-rose-500",
-  Mumbai: "from-sky-500 to-indigo-600",
-  Jaipur: "from-rose-400 to-pink-600",
-  "New Delhi": "from-violet-500 to-purple-700",
-  Bengaluru: "from-emerald-400 to-teal-600",
-  Kochi: "from-cyan-400 to-blue-600",
-};
+const CITIES: { city: string; gradient: string; photo: string }[] = [
+  { city: "Goa", gradient: "from-amber-400 to-rose-500", photo: "1512343879784-a960bf40e7f2" },
+  { city: "Mumbai", gradient: "from-sky-500 to-indigo-600", photo: "1567157577867-05ccb1388e66" },
+  { city: "Jaipur", gradient: "from-rose-400 to-pink-600", photo: "1477587458883-47145ed94245" },
+  { city: "New Delhi", gradient: "from-violet-500 to-purple-700", photo: "1587474260584-136574528ed5" },
+  { city: "Bengaluru", gradient: "from-emerald-400 to-teal-600", photo: "1596176530529-78163a4f7af2" },
+  { city: "Kochi", gradient: "from-cyan-400 to-blue-600", photo: "1602216056096-3b40cc0c9944" },
+];
 
 export function PopularCities({ kind, label }: { kind: "stays" | "cars"; label: string }) {
   return (
@@ -72,17 +72,26 @@ export function PopularCities({ kind, label }: { kind: "stays" | "cars"; label: 
         <h2 className="mt-1.5 font-display text-2xl font-extrabold tracking-tight">{label}</h2>
       </Reveal>
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        {Object.entries(CITY_GRADIENTS).map(([city, gradient], i) => (
+        {CITIES.map(({ city, gradient, photo }, i) => (
           <Reveal key={city} delay={i * 60}>
             <Link
               to={`/${kind}?city=${encodeURIComponent(city)}`}
               className={cn(
-                "group relative flex h-28 items-end overflow-hidden rounded-2xl bg-gradient-to-br p-4 text-white transition-transform hover:-translate-y-1",
+                "group relative flex h-32 items-end overflow-hidden rounded-2xl bg-gradient-to-br p-4 text-white transition-transform hover:-translate-y-1",
                 gradient,
               )}
             >
-              <span className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/10" aria-hidden />
-              <span className="relative font-display font-bold">{city}</span>
+              <img
+                src={`https://images.unsplash.com/photo-${photo}?auto=format&fit=crop&w=500&q=75`}
+                alt=""
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" aria-hidden />
+              <span className="relative font-display font-bold drop-shadow">{city}</span>
             </Link>
           </Reveal>
         ))}

@@ -157,8 +157,17 @@ export function StaysPage() {
                     selectedId === s.id && "ring-2 ring-brand",
                   )}
                 >
-                  <div className={cn("relative h-36 bg-gradient-to-br", s.gradient)}>
-                    <span className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" aria-hidden />
+                  <div className={cn("group relative h-40 overflow-hidden bg-gradient-to-br", s.gradient)}>
+                    <img
+                      src={s.photo}
+                      alt=""
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" aria-hidden />
                     {s.ecoCertified && (
                       <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-eco backdrop-blur">
                         <Leaf size={11} aria-hidden />

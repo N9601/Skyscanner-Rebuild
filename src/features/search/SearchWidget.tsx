@@ -59,7 +59,7 @@ export function SearchWidget({ compact }: { compact?: boolean }) {
       transition={{ duration: 0.55, ease: [0.21, 0.61, 0.35, 1], delay: 0.15 }}
       onSubmit={submit}
       aria-label="Search"
-      className="w-full"
+      className="relative z-30 w-full"
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <TripTypeTabs value={tripType} onChange={setTripType} />

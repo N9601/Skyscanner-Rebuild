@@ -46,6 +46,7 @@ export interface StayOffer {
   amenities: string[];
   ecoCertified: boolean;
   gradient: string;
+  photo: string;
   lat: number;
   lon: number;
 }

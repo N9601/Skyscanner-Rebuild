@@ -140,6 +140,27 @@ export async function fetchPriceCalendar(q: SearchQuery): Promise<DayPrice[]> {
   return days;
 }
 
+export async function fetchMonthPrices(q: SearchQuery): Promise<DayPrice[]> {
+  await delay(380);
+  const anchor = q.depart ? new Date(q.depart) : new Date();
+  const y = anchor.getFullYear();
+  const m = anchor.getMonth();
+  const rand = mulberry32(hashSeed(`month|${q.from}|${q.to}|${y}-${m}`.toLowerCase()));
+  const { distanceKm, domestic } = routeInfo(q);
+  const base = Math.max(domestic ? 2400 : 9500, distanceKm * (domestic ? 2.7 : 5.6));
+  const count = new Date(y, m + 1, 0).getDate();
+  const list: DayPrice[] = Array.from({ length: count }, (_, i) => {
+    const day = new Date(y, m, i + 1);
+    const weekend = day.getDay() === 5 || day.getDay() === 6 ? 1.12 : 1;
+    const wave = Math.sin(i * 0.9) * base * 0.12;
+    const price = Math.round((base + wave + rand() * base * 0.22) * weekend);
+    return { date: `${y}-${pad(m + 1)}-${pad(i + 1)}`, price, cheapest: false };
+  });
+  const min = Math.min(...list.map((d) => d.price));
+  list.forEach((d) => (d.cheapest = d.price === min));
+  return list;
+}
+
 const STAY_NAMES = [
   "The Meridian",
   "Casa Azure",
@@ -163,6 +184,18 @@ const STAY_GRADIENTS = [
   "from-cyan-400 to-blue-600",
 ];
 
+const STAY_PHOTOS = [
+  "1566073771259-6a8506099945",
+  "1582719508461-905c673771fd",
+  "1520250497591-112f2f40a3f4",
+  "1551882547-ff40c63fe5fa",
+  "1522708323590-d24dbb6b0267",
+  "1560448204-e02f11c3d0e2",
+  "1571003123894-1f0594d2b5d9",
+  "1445019980597-93fa8acb246c",
+  "1564501049412-61c2a3083791",
+];
+
 export async function fetchStays(city: string): Promise<StayOffer[]> {
   await delay(420 + Math.random() * 300);
   const rand = mulberry32(hashSeed(`stay|${city}`.toLowerCase()));
@@ -182,6 +215,7 @@ export async function fetchStays(city: string): Promise<StayOffer[]> {
       amenities: amenities.length ? amenities : ["Free WiFi"],
       ecoCertified: rand() > 0.65,
       gradient: STAY_GRADIENTS[i % STAY_GRADIENTS.length],
+      photo: `https://images.unsplash.com/photo-${STAY_PHOTOS[i % STAY_PHOTOS.length]}?auto=format&fit=crop&w=700&q=75`,
     };
   });
 }
