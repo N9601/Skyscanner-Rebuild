@@ -1,3 +1,10 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,26 +21,51 @@
   #root {
     height: 100%;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   *:focus-visible {
     @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-surface dark:ring-offset-surface-dark;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-700;
   }
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl bg-white shadow-card dark:bg-surface-dark-muted;
+    @apply rounded-2xl border border-black/[0.06] bg-white shadow-card dark:border-white/[0.08] dark:bg-surface-dark-muted;
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all disabled:opacity-50 disabled:pointer-events-none;
   }
   .btn-primary {
-    @apply btn bg-brand text-white hover:bg-brand-600;
+    @apply btn bg-brand text-white shadow-sm shadow-brand/25 hover:bg-brand-600 hover:shadow-md hover:shadow-brand/25 active:scale-[0.98];
   }
   .btn-ghost {
     @apply btn text-ink hover:bg-surface-muted dark:text-ink-inverse dark:hover:bg-surface-dark-muted;
+  }
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-brand;
+  }
+  .input-shell {
+    @apply flex flex-col gap-1 rounded-xl border border-black/[0.08] bg-white px-3.5 py-2.5 transition-colors focus-within:border-brand/60 focus-within:ring-1 focus-within:ring-brand/30 dark:border-white/[0.1] dark:bg-surface-dark;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
