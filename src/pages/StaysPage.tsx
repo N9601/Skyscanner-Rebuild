@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Check, Leaf, Plus, Star } from "lucide-react";
 import { fetchStays, formatINR } from "@/lib/mockApi";
 import { SearchWidget } from "@/features/search/SearchWidget";
+import { PopularCities } from "@/features/search/PopularGrids";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { useTrips } from "@/stores/trips";
 import { cn } from "@/lib/cn";
@@ -43,6 +44,7 @@ export function StaysPage() {
         <div className="mt-8">
           <SearchWidget compact />
         </div>
+        <PopularCities kind="stays" label="Cities travelers are booking" />
       </div>
     );
   }

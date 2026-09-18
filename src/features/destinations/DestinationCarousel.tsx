@@ -74,13 +74,22 @@ export function DestinationCarousel() {
                 }}
                 transition={{ type: "spring", stiffness: 260, damping: 30 }}
                 className={cn(
-                  "absolute left-1/2 top-0 h-full w-[240px] overflow-hidden rounded-2xl bg-gradient-to-br md:w-[280px]",
+                  "group absolute left-1/2 top-0 h-full w-[240px] overflow-hidden rounded-2xl bg-gradient-to-br md:w-[280px]",
                   d.gradient,
                   offset !== 0 && "cursor-pointer",
                 )}
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/20" aria-hidden />
+                <img
+                  src={d.photo}
+                  alt=""
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/25" aria-hidden />
                 {d.tag && (
                   <span className="absolute right-3 top-3 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
                     #{d.tag}
@@ -98,13 +107,15 @@ export function DestinationCarousel() {
             );
           })}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center">
+        </div>
+
+        <div className="relative z-20 mt-8 flex justify-center">
             <motion.div
               key={current.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
-              className="pointer-events-auto flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl bg-white/10 px-5 py-3 backdrop-blur-md"
+              className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl bg-white/10 px-5 py-3 backdrop-blur-md"
             >
               <span className="flex items-center gap-1.5 text-sm text-white/85">
                 <MapPin size={14} aria-hidden />
@@ -120,7 +131,6 @@ export function DestinationCarousel() {
                 Explore <ArrowRight size={14} aria-hidden />
               </Link>
             </motion.div>
-          </div>
         </div>
       </div>
     </section>

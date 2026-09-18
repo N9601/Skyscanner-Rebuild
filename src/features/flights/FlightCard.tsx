@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { BellPlus, Leaf, Plus, Check } from "lucide-react";
 import type { FlightOffer } from "@/types";
@@ -17,6 +18,7 @@ const MONOGRAM_TINTS = [
 export function FlightCard({ offer, index }: { offer: FlightOffer; index: number }) {
   const { items, add, remove } = useTrips();
   const addAlert = useAlerts((s) => s.add);
+  const [logoFailed, setLogoFailed] = useState(false);
   const inTrip = items.some((i) => i.id === offer.id);
   const tint = MONOGRAM_TINTS[offer.airlineCode.charCodeAt(0) % MONOGRAM_TINTS.length];
 
@@ -29,9 +31,19 @@ export function FlightCard({ offer, index }: { offer: FlightOffer; index: number
     >
       <div className="flex flex-wrap items-center gap-4 md:gap-6">
         <div className="flex min-w-40 items-center gap-3">
-          <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-xl font-display text-sm font-extrabold", tint)}>
-            {offer.airlineCode}
-          </span>
+          {logoFailed ? (
+            <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-xl font-display text-sm font-extrabold", tint)}>
+              {offer.airlineCode}
+            </span>
+          ) : (
+            <img
+              src={`https://images.kiwi.com/airlines/64/${offer.airlineCode}.png`}
+              alt={`${offer.airline} logo`}
+              loading="lazy"
+              onError={() => setLogoFailed(true)}
+              className="h-11 w-11 shrink-0 rounded-xl border border-black/[0.06] bg-white object-contain p-1.5 dark:border-white/[0.1]"
+            />
+          )}
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{offer.airline}</p>
             <p className="text-xs text-ink-soft">{offer.flightNo}</p>

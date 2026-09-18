@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Car, Check, Fuel, Leaf, Plus, Users, Zap } from "lucide-react";
 import { fetchCars, formatINR } from "@/lib/mockApi";
 import { SearchWidget } from "@/features/search/SearchWidget";
+import { PopularCities } from "@/features/search/PopularGrids";
 import { useTrips } from "@/stores/trips";
 import { cn } from "@/lib/cn";
 
@@ -35,6 +36,7 @@ export function CarsPage() {
         <div className="mt-8">
           <SearchWidget compact />
         </div>
+        <PopularCities kind="cars" label="Popular pickup cities" />
       </div>
     );
   }

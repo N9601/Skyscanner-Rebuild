@@ -7,6 +7,7 @@ import { FlightCard } from "@/features/flights/FlightCard";
 import { FiltersPanel, type FlightFilters } from "@/features/flights/FiltersPanel";
 import { PriceStrip } from "@/features/flights/PriceStrip";
 import { SearchWidget } from "@/features/search/SearchWidget";
+import { PopularRoutes } from "@/features/search/PopularGrids";
 import { findAirport } from "@/data/airports";
 import { cn } from "@/lib/cn";
 import type { CabinClass, SearchQuery } from "@/types";
@@ -86,6 +87,7 @@ export function FlightsPage() {
         <div className="mt-8">
           <SearchWidget compact />
         </div>
+        <PopularRoutes />
       </div>
     );
   }

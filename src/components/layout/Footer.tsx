@@ -1,13 +1,11 @@
-import { Compass } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-black/[0.06] bg-surface-muted/60 py-10 text-sm dark:border-white/[0.08] dark:bg-surface-dark-muted/50">
       <div className="container flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 text-white">
-            <Compass size={15} aria-hidden />
-          </span>
+          <Logo size={32} />
           <div>
             <p className="font-display font-bold text-ink dark:text-ink-inverse">Akashavani</p>
             <p className="text-xs text-ink-soft">Search once. Travel smarter.</p>

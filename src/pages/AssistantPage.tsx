@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Send, Sparkles } from "lucide-react";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { routeIntent, type AssistantReply } from "@/features/assistant/intentRouter";
 import { askGemini, geminiEnabled } from "@/features/assistant/gemini";
 import { cn } from "@/lib/cn";
@@ -18,7 +18,6 @@ const SUGGESTIONS = [
   "Somewhere under ₹15,000",
   "A beach weekend",
   "Greener flights DEL to BOM",
-  "Mountains in December",
 ];
 
 let nextId = 1;
@@ -28,7 +27,7 @@ export function AssistantPage() {
     {
       id: 0,
       role: "assistant",
-      text: "Hey, I'm the Akashavani assistant. Give me a route, a budget, or a vibe and I'll turn it into a search.",
+      text: "Hi. Give me a route, a budget, or a vibe and I'll turn it into a search.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -57,7 +56,7 @@ export function AssistantPage() {
         reply = scripted;
       }
     } else {
-      await new Promise((r) => setTimeout(r, 650 + Math.random() * 500));
+      await new Promise((r) => setTimeout(r, 550 + Math.random() * 400));
     }
 
     setMessages((m) => [
@@ -73,60 +72,45 @@ export function AssistantPage() {
   }
 
   return (
-    <div className="route-fade container py-8">
-      <div className="mx-auto max-w-3xl">
-        <div className="overflow-hidden rounded-[2rem] bg-[#0B1D1E] text-white shadow-lifted">
-          <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-black">
-                <Sparkles size={17} aria-hidden />
-              </span>
-              <div>
-                <p className="font-display font-bold">Trip assistant</p>
-                <p className="text-xs text-white/50">
-                  {geminiEnabled ? "Gemini powered · travel only" : "Scripted demo · travel only"}
-                </p>
-              </div>
-            </div>
-            <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-              Online
-            </span>
-          </div>
+    <div className="route-fade container py-10">
+      <div className="mx-auto max-w-2xl">
+        <header className="mb-6 text-center">
+          <h1 className="font-display text-2xl font-extrabold tracking-tight">Trip assistant</h1>
+          <p className="mt-1 text-sm text-ink-soft">
+            {geminiEnabled ? "Powered by Gemini · travel only" : "Scripted demo · travel only"}
+          </p>
+        </header>
 
-          <div
-            ref={scrollRef}
-            className="h-[420px] space-y-4 overflow-y-auto px-6 py-6"
-            aria-live="polite"
-          >
+        <div className="card overflow-hidden p-0">
+          <div ref={scrollRef} className="h-[380px] space-y-3 overflow-y-auto px-5 py-6" aria-live="polite">
             <AnimatePresence initial={false}>
               {messages.map((m) => (
                 <motion.div
                   key={m.id}
-                  initial={{ opacity: 0, y: 14, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
                   className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
                 >
                   <div
                     className={cn(
-                      "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                      "max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                       m.role === "user"
-                        ? "rounded-br-md bg-white text-ink"
-                        : "rounded-bl-md bg-white/10 text-white/90",
+                        ? "rounded-br-md bg-ink text-white dark:bg-white dark:text-ink"
+                        : "rounded-bl-md bg-surface-muted text-ink dark:bg-surface-dark dark:text-ink-inverse",
                     )}
                   >
                     <p>{m.text}</p>
                     {m.actions && m.actions.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="mt-2.5 flex flex-wrap gap-1.5">
                         {m.actions.map((a) => (
                           <Link
                             key={a.to + a.label}
                             to={a.to}
-                            className="inline-flex items-center gap-1 rounded-full bg-emerald-400 px-3 py-1.5 text-xs font-bold text-black transition-transform hover:scale-105"
+                            className="inline-flex items-center gap-1 rounded-full border border-brand/30 px-3 py-1 text-xs font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
                           >
                             {a.label}
-                            <ArrowUpRight size={12} aria-hidden />
+                            <ArrowUpRight size={11} aria-hidden />
                           </Link>
                         ))}
                       </div>
@@ -137,16 +121,12 @@ export function AssistantPage() {
             </AnimatePresence>
 
             {typing && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-start"
-              >
-                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-md bg-white/10 px-4 py-3.5">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-surface-muted px-4 py-3 dark:bg-surface-dark">
                   {[0, 1, 2].map((i) => (
                     <motion.span
                       key={i}
-                      className="h-1.5 w-1.5 rounded-full bg-white/60"
+                      className="h-1 w-1 rounded-full bg-ink-soft"
                       animate={{ opacity: [0.3, 1, 0.3] }}
                       transition={{ repeat: Infinity, duration: 1, delay: i * 0.18 }}
                     />
@@ -156,42 +136,44 @@ export function AssistantPage() {
             )}
           </div>
 
-          <div className="border-t border-white/10 p-4">
-            <div className="scrollbar-none mb-3 flex gap-2 overflow-x-auto">
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => ask(s)}
-                  className="shrink-0 rounded-full border border-white/15 px-3.5 py-1.5 text-xs font-medium text-white/70 transition-colors hover:border-emerald-400 hover:text-emerald-300"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <form onSubmit={submit} className="flex gap-2">
+          <div className="border-t border-black/[0.05] px-4 pb-4 pt-3 dark:border-white/[0.07]">
+            {messages.length <= 1 && (
+              <div className="scrollbar-none mb-3 flex gap-1.5 overflow-x-auto">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => ask(s)}
+                    className="shrink-0 rounded-full border border-black/[0.08] px-3 py-1.5 text-xs text-ink-muted transition-colors hover:border-brand/50 hover:text-brand dark:border-white/[0.1] dark:text-ink-inverse/60"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+            <form onSubmit={submit} className="flex items-center gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Where to next?"
                 aria-label="Message the assistant"
-                className="flex-1 rounded-xl bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-white/40 focus:bg-white/15"
+                className="flex-1 rounded-full border border-black/[0.08] bg-transparent px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-ink-soft/60 focus:border-brand/50 dark:border-white/[0.1]"
               />
               <button
                 type="submit"
                 aria-label="Send"
                 disabled={!input.trim() || typing}
-                className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-400 text-black transition-all hover:scale-105 disabled:opacity-40"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink text-white transition-transform hover:scale-105 disabled:opacity-30 dark:bg-white dark:text-ink"
               >
-                <Send size={17} aria-hidden />
+                <ArrowUp size={16} aria-hidden />
               </button>
             </form>
           </div>
         </div>
 
-        <p className="mt-4 text-center text-xs text-ink-soft">
+        <p className="mt-3 text-center text-xs text-ink-soft">
           {geminiEnabled
-            ? "Route and budget intents answer instantly in-app; open questions go to Gemini."
+            ? "Route and budget questions answer instantly in-app. Open questions go to Gemini."
             : "Responses are scripted for the offline demo. Add a Gemini key in .env to go live."}
         </p>
       </div>

@@ -50,10 +50,18 @@ export const AIRPORTS: Airport[] = [
 export function findAirport(input: string): Airport | undefined {
   const q = input.trim().toLowerCase();
   if (!q) return undefined;
+  const code = q.match(/\(([a-z]{3})\)/)?.[1];
+  if (code) {
+    const byCode = AIRPORTS.find((a) => a.iata.toLowerCase() === code);
+    if (byCode) return byCode;
+  }
+  const plain = q.replace(/\s*\([a-z]{3}\)\s*/g, "").trim();
   return (
-    AIRPORTS.find((a) => a.iata.toLowerCase() === q) ??
-    AIRPORTS.find((a) => a.city.toLowerCase() === q) ??
-    AIRPORTS.find((a) => a.city.toLowerCase().startsWith(q) || a.name.toLowerCase().includes(q))
+    AIRPORTS.find((a) => a.iata.toLowerCase() === plain) ??
+    AIRPORTS.find((a) => a.city.toLowerCase() === plain) ??
+    AIRPORTS.find(
+      (a) => a.city.toLowerCase().startsWith(plain) || a.name.toLowerCase().includes(plain),
+    )
   );
 }
 

@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Compass, Moon, Sparkles, Sun } from "lucide-react";
+import { Moon, Sparkles, Sun } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/cn";
 import { springy } from "@/lib/motion";
 import { useTheme } from "@/stores/theme";
@@ -23,9 +24,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-black/[0.06] bg-white/75 backdrop-blur-xl dark:border-white/[0.08] dark:bg-surface-dark/75">
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-glow">
-            <Compass size={18} aria-hidden />
-          </span>
+          <Logo size={36} />
           <span className="font-display text-lg font-extrabold tracking-tight">Akashavani</span>
         </Link>
 

@@ -132,7 +132,7 @@ export function HomePage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.2 }}
-                className="animate-float-slow absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-sky-400 via-brand-500 to-indigo-600 shadow-glow"
+                className="animate-float-slow absolute left-[30%] top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-sky-400 via-brand-500 to-indigo-600 shadow-glow"
               >
                 <div className="absolute inset-0 overflow-hidden rounded-full">
                   <div className="absolute left-6 top-10 h-16 w-24 rounded-[40%] bg-emerald-400/90 blur-[1px]" />
