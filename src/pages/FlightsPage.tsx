@@ -7,11 +7,12 @@ import { FlightCard } from "@/features/flights/FlightCard";
 import { FiltersPanel, type FlightFilters } from "@/features/flights/FiltersPanel";
 import { PriceStrip } from "@/features/flights/PriceStrip";
 import { MonthGrid } from "@/features/flights/MonthGrid";
+import { FlightDetailDrawer } from "@/features/flights/FlightDetailDrawer";
 import { SearchWidget } from "@/features/search/SearchWidget";
 import { PopularRoutes } from "@/features/search/PopularGrids";
 import { findAirport } from "@/data/airports";
 import { cn } from "@/lib/cn";
-import type { CabinClass, SearchQuery } from "@/types";
+import type { CabinClass, FlightOffer, SearchQuery } from "@/types";
 
 type SortKey = "best" | "cheapest" | "fastest" | "greenest";
 
@@ -37,6 +38,7 @@ export function FlightsPage() {
   const { data: calendar } = usePriceCalendar(query);
   const [sort, setSort] = useState<SortKey>("best");
   const [showMonth, setShowMonth] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<FlightOffer | null>(null);
   const { data: monthPrices } = useMonthPrices(query, showMonth);
   const [filters, setFilters] = useState<FlightFilters>({
     stops: "any",
@@ -227,7 +229,9 @@ export function FlightsPage() {
 
           <AnimatePresence initial={false}>
             {!isLoading &&
-              visible.map((o, i) => <FlightCard key={o.id} offer={o} index={i} />)}
+              visible.map((o, i) => (
+                <FlightCard key={o.id} offer={o} index={i} onSelect={setSelectedOffer} />
+              ))}
           </AnimatePresence>
 
           {!isLoading && visible.length > 0 && (
@@ -238,6 +242,14 @@ export function FlightsPage() {
           )}
         </section>
       </div>
+
+      <FlightDetailDrawer
+        offer={selectedOffer}
+        avgCo2={
+          offers?.length ? offers.reduce((s, o) => s + o.co2kg, 0) / offers.length : 0
+        }
+        onClose={() => setSelectedOffer(null)}
+      />
     </div>
   );
 }

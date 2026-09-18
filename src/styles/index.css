@@ -91,6 +91,8 @@ body::after {
 .line-mask {
   display: block;
   overflow: hidden;
+  padding-bottom: 0.18em;
+  margin-bottom: -0.18em;
 }
 .line-rise {
   display: block;

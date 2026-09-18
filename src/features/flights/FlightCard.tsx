@@ -15,7 +15,15 @@ const MONOGRAM_TINTS = [
   "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
 ];
 
-export function FlightCard({ offer, index }: { offer: FlightOffer; index: number }) {
+export function FlightCard({
+  offer,
+  index,
+  onSelect,
+}: {
+  offer: FlightOffer;
+  index: number;
+  onSelect?: (offer: FlightOffer) => void;
+}) {
   const { items, add, remove } = useTrips();
   const addAlert = useAlerts((s) => s.add);
   const [logoFailed, setLogoFailed] = useState(false);
@@ -27,7 +35,8 @@ export function FlightCard({ offer, index }: { offer: FlightOffer; index: number
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.4) }}
-      className="card card-hover p-5"
+      className={cn("card card-hover p-5", onSelect && "cursor-pointer")}
+      onClick={() => onSelect?.(offer)}
     >
       <div className="flex flex-wrap items-center gap-4 md:gap-6">
         <div className="flex min-w-40 items-center gap-3">
@@ -96,15 +105,16 @@ export function FlightCard({ offer, index }: { offer: FlightOffer; index: number
           <div className="flex gap-1.5">
             <button
               type="button"
-              onClick={() =>
+              onClick={(e) => {
+                e.stopPropagation();
                 addAlert({
                   route: `${offer.from} → ${offer.to}`,
                   from: offer.from,
                   to: offer.to,
                   targetPrice: Math.round(offer.price * 0.9),
                   currentPrice: offer.price,
-                })
-              }
+                });
+              }}
               aria-label="Create price alert"
               title="Alert me below this price"
               className="grid h-10 w-10 place-items-center rounded-xl border border-black/[0.08] text-ink-muted transition-colors hover:border-amber-400 hover:text-amber-500 dark:border-white/[0.1] dark:text-ink-inverse/70"
@@ -113,18 +123,19 @@ export function FlightCard({ offer, index }: { offer: FlightOffer; index: number
             </button>
             <button
               type="button"
-              onClick={() =>
-                inTrip
-                  ? remove(offer.id)
-                  : add({
-                      id: offer.id,
-                      kind: "flight",
-                      title: `${offer.from} → ${offer.to}`,
-                      subtitle: `${offer.airline} · ${offer.departTime} · ${offer.stops === 0 ? "Nonstop" : `${offer.stops} stop`}`,
-                      price: offer.price,
-                      meta: `${offer.co2kg} kg CO2`,
-                    })
-              }
+              onClick={(e) => {
+                e.stopPropagation();
+                if (inTrip) remove(offer.id);
+                else
+                  add({
+                    id: offer.id,
+                    kind: "flight",
+                    title: `${offer.from} → ${offer.to}`,
+                    subtitle: `${offer.airline} · ${offer.departTime} · ${offer.stops === 0 ? "Nonstop" : `${offer.stops} stop`}`,
+                    price: offer.price,
+                    meta: `${offer.co2kg} kg CO2`,
+                  });
+              }}
               className={cn(
                 "inline-flex h-10 items-center gap-1.5 rounded-xl px-4 text-sm font-semibold transition-all",
                 inTrip
