@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRightLeft, SearchX } from "lucide-react";
-import { useFlights, usePriceCalendar } from "@/features/flights/useFlights";
+import { ArrowRightLeft, CalendarDays, SearchX } from "lucide-react";
+import { useFlights, useMonthPrices, usePriceCalendar } from "@/features/flights/useFlights";
 import { FlightCard } from "@/features/flights/FlightCard";
 import { FiltersPanel, type FlightFilters } from "@/features/flights/FiltersPanel";
 import { PriceStrip } from "@/features/flights/PriceStrip";
+import { MonthGrid } from "@/features/flights/MonthGrid";
 import { SearchWidget } from "@/features/search/SearchWidget";
 import { PopularRoutes } from "@/features/search/PopularGrids";
 import { findAirport } from "@/data/airports";
@@ -35,6 +36,8 @@ export function FlightsPage() {
   const { data: offers, isLoading } = useFlights(query);
   const { data: calendar } = usePriceCalendar(query);
   const [sort, setSort] = useState<SortKey>("best");
+  const [showMonth, setShowMonth] = useState(false);
+  const { data: monthPrices } = useMonthPrices(query, showMonth);
   const [filters, setFilters] = useState<FlightFilters>({
     stops: "any",
     maxPrice: 500000,
@@ -147,14 +150,54 @@ export function FlightsPage() {
 
       {calendar && (
         <div className="mb-6">
-          <PriceStrip
-            days={calendar}
-            selected={query.depart}
-            onSelect={(date) => {
-              params.set("depart", date);
-              setParams(params);
-            }}
-          />
+          <div className="flex items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <PriceStrip
+                days={calendar}
+                selected={query.depart}
+                onSelect={(date) => {
+                  params.set("depart", date);
+                  setParams(params);
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowMonth((v) => !v)}
+              aria-expanded={showMonth}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-3.5 py-2.5 text-sm font-medium transition-colors",
+                showMonth
+                  ? "border-brand bg-brand-50 text-brand dark:bg-brand-700/25"
+                  : "border-black/[0.08] text-ink-muted hover:border-brand/40 dark:border-white/[0.1] dark:text-ink-inverse/70",
+              )}
+            >
+              <CalendarDays size={15} aria-hidden />
+              <span className="hidden sm:inline">Whole month</span>
+            </button>
+          </div>
+          <AnimatePresence>
+            {showMonth && monthPrices && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="pt-4">
+                  <MonthGrid
+                    days={monthPrices}
+                    selected={query.depart}
+                    onSelect={(date) => {
+                      params.set("depart", date);
+                      setParams(params);
+                    }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
