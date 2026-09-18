@@ -47,7 +47,7 @@ export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
           <span className="font-display text-lg font-extrabold tracking-tight">Akashavani</span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden md:block">
+        <nav aria-label="Primary" data-tour="nav" className="hidden md:block">
           <ul className="flex items-center gap-0.5 rounded-full border border-black/[0.05] bg-surface-muted/70 p-1 dark:border-white/[0.06] dark:bg-surface-dark-muted/70">
             {NAV.map((item) => {
               const active = pathname.startsWith(item.to);
@@ -89,6 +89,7 @@ export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
           <button
             type="button"
             onClick={onOpenPalette}
+            data-tour="palette"
             aria-label="Open command palette"
             className="hidden h-9 items-center gap-2 rounded-full border border-black/[0.08] px-3 text-xs font-medium text-ink-soft transition-colors hover:text-ink dark:border-white/[0.1] dark:hover:text-ink-inverse sm:flex"
           >
@@ -103,7 +104,7 @@ export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
           >
             {dark ? <Sun size={16} aria-hidden /> : <Moon size={16} aria-hidden />}
           </button>
-          <NavLink to="/assistant" className="btn-primary btn-shine rounded-full">
+          <NavLink to="/assistant" data-tour="assistant" className="btn-primary btn-shine rounded-full">
             <Sparkles size={15} aria-hidden />
             <span className="hidden sm:inline">Assistant</span>
           </NavLink>
@@ -130,6 +131,14 @@ export function Header({ onOpenPalette }: { onOpenPalette?: () => void }) {
                       className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-black/[0.07] bg-white py-1.5 shadow-lifted dark:border-white/[0.1] dark:bg-surface-dark-muted"
                     >
                       <p className="truncate px-4 py-2 text-xs text-ink-soft">{user.email}</p>
+                      <NavLink
+                        to="/profile"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium hover:bg-surface-muted dark:hover:bg-surface-dark"
+                      >
+                        <UserRound size={14} aria-hidden />
+                        Profile
+                      </NavLink>
                       <button
                         type="button"
                         onClick={() => {

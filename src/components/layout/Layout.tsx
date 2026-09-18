@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "@/components/CommandPalette";
+import { Tour } from "@/components/Tour";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { applyThemeClass, useTheme } from "@/stores/theme";
 
@@ -58,6 +59,7 @@ export function Layout() {
       <Footer />
       <BottomNav />
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      {pathname === "/" && <Tour />}
     </div>
   );
 }

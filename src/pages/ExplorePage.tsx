@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowRight, Globe2 } from "lucide-react";
 import { fetchEverywhere, formatINR } from "@/lib/mockApi";
-import { DESTINATIONS } from "@/features/destinations/data";
 import { findAirport } from "@/data/airports";
+import { getCityPhoto } from "@/data/cityPhotos";
 import { Chip } from "@/components/ui/Chip";
 import { cn } from "@/lib/cn";
 
@@ -87,8 +87,7 @@ export function ExplorePage() {
           ))}
 
         {visible.map((d, i) => {
-          const known = DESTINATIONS.find((x) => x.iata === d.iata);
-          const gradient = known?.gradient ?? FALLBACK_GRADIENTS[i % FALLBACK_GRADIENTS.length];
+          const gradient = FALLBACK_GRADIENTS[i % FALLBACK_GRADIENTS.length];
           return (
             <motion.div
               key={d.iata}
@@ -103,17 +102,15 @@ export function ExplorePage() {
                   gradient,
                 )}
               >
-                {known && (
-                  <img
-                    src={known.photo}
-                    alt=""
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                )}
+                <img
+                  src={getCityPhoto(d.iata, i)}
+                  alt=""
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
                 <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" aria-hidden />
                 <span className="absolute right-3 top-3 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold backdrop-blur">
                   {d.iata}

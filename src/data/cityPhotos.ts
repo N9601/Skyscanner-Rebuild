@@ -1,0 +1,41 @@
+const U = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=700&q=75`;
+
+const CITY_PHOTOS: Record<string, string> = {
+  GOI: U("1512343879784-a960bf40e7f2"),
+  MLE: U("1573843981267-be1999ff37cd"),
+  SXR: U("1605649487212-47bdab064df7"),
+  DXB: U("1518684079-3c830dcef090"),
+  BKK: U("1552465011-b4e21bf6e79a"),
+  CDG: U("1502602898657-3e91760cbb34"),
+  NRT: U("1490806843957-31f4c9a91c65"),
+  BOM: U("1567157577867-05ccb1388e66"),
+  JAI: U("1477587458883-47145ed94245"),
+  DEL: U("1587474260584-136574528ed5"),
+  BLR: U("1596176530529-78163a4f7af2"),
+  COK: U("1602216056096-3b40cc0c9944"),
+  SIN: U("1525625293386-3f8f99389edd"),
+  LHR: U("1513635269975-59663e0ac1ad"),
+  JFK: U("1496442226666-8d4d0e62e6e9"),
+  SFO: U("1501594907352-04cda38ebc29"),
+  IST: U("1541432901042-2d8bd64b4a9b"),
+  HKG: U("1536599018102-9f803c140fc1"),
+  ICN: U("1517154421773-0529f29ea451"),
+  SYD: U("1506973035872-a4ec16b8e8d9"),
+  AMS: U("1534351590666-13e3e96b5017"),
+  KUL: U("1596422846543-75c6fc197f07"),
+  KTM: U("1544735716-392fe2489ffa"),
+  AGR: U("1524492412937-b28074a5d7da"),
+};
+
+const POOL = [
+  U("1477959858617-67f85cf4f1df"),
+  U("1449824913935-59a10b8d2000"),
+  U("1524492412937-b28074a5d7da"),
+  U("1445019980597-93fa8acb246c"),
+  U("1520250497591-112f2f40a3f4"),
+  U("1551882547-ff40c63fe5fa"),
+];
+
+export function getCityPhoto(iata: string, index: number): string {
+  return CITY_PHOTOS[iata] ?? POOL[index % POOL.length];
+}
