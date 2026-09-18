@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { BellPlus, Check, Leaf, Plane, Plus, X } from "lucide-react";
+import { ArrowRight, BellPlus, Check, Leaf, Plane, Plus, X } from "lucide-react";
 import type { FlightOffer } from "@/types";
 import { formatDuration, formatINR } from "@/lib/mockApi";
 import { findAirport } from "@/data/airports";
@@ -17,6 +18,7 @@ interface DrawerProps {
 export function FlightDetailDrawer({ offer, avgCo2, onClose }: DrawerProps) {
   const { items, add, remove } = useTrips();
   const addAlert = useAlerts((s) => s.add);
+  const navigate = useNavigate();
   const [logoFailed, setLogoFailed] = useState(false);
 
   useEffect(() => {
@@ -220,14 +222,22 @@ export function FlightDetailDrawer({ offer, avgCo2, onClose }: DrawerProps) {
                       })
                 }
                 className={cn(
-                  "inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl text-sm font-semibold transition-all",
+                  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl px-4 text-sm font-semibold transition-all",
                   inTrip
                     ? "bg-eco-soft text-eco dark:bg-eco-dark/40 dark:text-emerald-300"
-                    : "bg-ink text-white hover:scale-[1.01] dark:bg-white dark:text-ink",
+                    : "border border-black/[0.08] text-ink hover:border-ink dark:border-white/[0.1] dark:text-ink-inverse",
                 )}
               >
                 {inTrip ? <Check size={16} aria-hidden /> : <Plus size={16} aria-hidden />}
-                {inTrip ? "In your trip" : `Add to trip · ${formatINR(offer.price)}`}
+                {inTrip ? "Saved" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/book", { state: { offer } })}
+                className="btn-primary btn-shine h-11 flex-1 rounded-xl text-sm"
+              >
+                Book · {formatINR(offer.price)}
+                <ArrowRight size={15} aria-hidden />
               </button>
             </footer>
           </motion.aside>

@@ -31,6 +31,10 @@ export function SearchWidget({ compact }: { compact?: boolean }) {
 
   function submit(e: FormEvent) {
     e.preventDefault();
+    if (tripType === "flights" && !destination.trim()) {
+      navigate(`/explore?from=${encodeURIComponent(origin)}`);
+      return;
+    }
     if (tripType === "flights") {
       const params = new URLSearchParams({
         from: origin,
@@ -149,8 +153,8 @@ export function SearchWidget({ compact }: { compact?: boolean }) {
               label={tripType === "flights" ? "To" : tripType === "stays" ? "Where to?" : "Pick-up city"}
               value={destination}
               onChange={setDestination}
-              placeholder={tripType === "flights" ? "City or airport" : "City"}
-              required
+              placeholder={tripType === "flights" ? "Anywhere" : "City"}
+              required={tripType !== "flights"}
             />
           </motion.div>
 

@@ -140,6 +140,32 @@ export async function fetchPriceCalendar(q: SearchQuery): Promise<DayPrice[]> {
   return days;
 }
 
+export interface EverywherePrice {
+  iata: string;
+  city: string;
+  country: string;
+  price: number;
+  domestic: boolean;
+  distanceKm: number;
+}
+
+export async function fetchEverywhere(from: string): Promise<EverywherePrice[]> {
+  await delay(520 + Math.random() * 280);
+  const origin = findAirport(from) ?? AIRPORTS[2];
+  return AIRPORTS.filter((a) => a.iata !== origin.iata)
+    .map((a) => {
+      const rand = mulberry32(hashSeed(`ev|${origin.iata}|${a.iata}`));
+      const distanceKm = Math.max(200, haversineKm(origin.lat, origin.lon, a.lat, a.lon));
+      const domestic = origin.country === "India" && a.country === "India";
+      const longHaul = distanceKm > 4000;
+      const perKm = domestic ? 2.9 : longHaul ? 6.4 : 4.8;
+      const floor = domestic ? 2200 : longHaul ? 24000 : 9000;
+      const price = Math.round(Math.max(floor, distanceKm * perKm * (0.82 + rand() * 0.3)));
+      return { iata: a.iata, city: a.city, country: a.country, price, domestic, distanceKm };
+    })
+    .sort((x, y) => x.price - y.price);
+}
+
 export async function fetchMonthPrices(q: SearchQuery): Promise<DayPrice[]> {
   await delay(380);
   const anchor = q.depart ? new Date(q.depart) : new Date();

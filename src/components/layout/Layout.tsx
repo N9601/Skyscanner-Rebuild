@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BottomNav } from "./BottomNav";
 import { CommandPalette } from "@/components/CommandPalette";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { applyThemeClass, useTheme } from "@/stores/theme";
 
 export function Layout() {
@@ -34,8 +35,14 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface dark:bg-surface-dark">
+      <ScrollProgress />
+      <div className="aurora" aria-hidden>
+        <span className="aurora-1" />
+        <span className="aurora-2" />
+        <span className="aurora-3" />
+      </div>
       <Header onOpenPalette={() => setPaletteOpen(true)} />
-      <main className="flex-1 pb-16 md:pb-0">
+      <main className="relative z-[1] flex-1 pb-16 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={pathname}

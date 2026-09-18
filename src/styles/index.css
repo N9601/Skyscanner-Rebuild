@@ -45,7 +45,7 @@
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all disabled:opacity-50 disabled:pointer-events-none;
   }
   .btn-primary {
-    @apply btn bg-brand text-white shadow-sm shadow-brand/25 hover:bg-brand-600 hover:shadow-md hover:shadow-brand/25 active:scale-[0.98];
+    @apply btn bg-gradient-to-r from-brand-500 to-indigo-600 text-white shadow-sm shadow-brand/30 hover:shadow-lg hover:shadow-brand/30 hover:brightness-110 active:scale-[0.98];
   }
   .btn-ghost {
     @apply btn text-ink hover:bg-surface-muted dark:text-ink-inverse dark:hover:bg-surface-dark-muted;
@@ -155,13 +155,109 @@ body::after {
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
 
-/* Card hover: hairline sharpens, shadow pops */
+/* Card hover: hairline sharpens, shadow pops with a brand glow */
 .card-hover {
   transition: border-color 0.25s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 .card-hover:hover {
-  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 12px 32px rgba(15, 23, 42, 0.12);
-  transform: translateY(-2px);
+  border-color: rgba(7, 112, 227, 0.25);
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.05),
+    0 12px 32px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(7, 112, 227, 0.08),
+    0 8px 40px rgba(7, 112, 227, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Ambient aurora: slow-drifting color orbs behind every page */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.45;
+}
+.aurora-1 {
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, rgba(7, 112, 227, 0.4), transparent 65%);
+  top: -160px;
+  left: -140px;
+  animation: aurora-drift 26s ease-in-out infinite alternate;
+}
+.aurora-2 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.32), transparent 65%);
+  top: 28%;
+  right: -160px;
+  animation: aurora-drift 34s ease-in-out infinite alternate-reverse;
+}
+.aurora-3 {
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, rgba(219, 39, 119, 0.18), transparent 65%);
+  bottom: -140px;
+  left: 26%;
+  animation: aurora-drift 40s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(90px, 70px) scale(1.18);
+  }
+}
+.dark .aurora span {
+  opacity: 0.3;
+}
+
+/* Gradient headline text */
+.text-gradient {
+  background: linear-gradient(100deg, #0770e3, #7c3aed 55%, #db2777);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-pan 6s ease infinite;
+}
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Shine sweep on hover */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -70%;
+  width: 45%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.btn-shine:hover::after {
+  left: 130%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -172,7 +268,9 @@ body::after {
   .route-fade,
   .animate-float,
   .animate-float-slow,
-  .ticker-track {
+  .ticker-track,
+  .aurora span,
+  .text-gradient-animate {
     animation: none;
   }
   .card-hover:hover {

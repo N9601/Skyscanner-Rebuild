@@ -82,7 +82,7 @@ export function HomePage() {
                 </span>
                 <span className="line-mask">
                   <span className="line-rise" style={{ animationDelay: "0.12s" }}>
-                    perfect <span className="text-brand">journey</span>
+                    perfect <span className="text-gradient text-gradient-animate">journey</span>
                     <svg
                       className="ml-3 inline-block h-8 w-14 text-ink dark:text-ink-inverse"
                       viewBox="0 0 60 32"
@@ -110,7 +110,7 @@ export function HomePage() {
                 <div className="mt-7 flex flex-wrap items-center gap-4">
                   <Link
                     to="/flights?from=Bengaluru+(BLR)&to=Goa+(GOI)&pax=1&cabin=economy"
-                    className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-[1.03] hover:shadow-xl active:scale-95 dark:bg-white dark:text-ink"
+                    className="btn-shine inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-[1.03] hover:shadow-xl active:scale-95 dark:bg-white dark:text-ink"
                   >
                     Discover now
                     <ArrowRight size={16} aria-hidden />
@@ -190,7 +190,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="ticker-mask mt-14 overflow-hidden border-y border-black/[0.05] py-3.5 dark:border-white/[0.07]" aria-label="Live fare movements">
+      <section
+        className="ticker-mask mt-14 overflow-hidden border-y border-brand/10 bg-gradient-to-r from-brand-50/70 via-violet-50/60 to-rose-50/70 py-3.5 dark:border-white/[0.07] dark:from-brand-900/25 dark:via-violet-950/25 dark:to-rose-950/20"
+        aria-label="Live fare movements"
+      >
         <div className="ticker-track flex items-center gap-8">
           {[...TICKER, ...TICKER].map((t, i) => (
             <span key={i} className="flex shrink-0 items-center gap-2.5 text-sm">
@@ -204,7 +207,7 @@ export function HomePage() {
       </section>
 
       <section className="container py-16">
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 rounded-[2rem] border border-brand/10 bg-gradient-to-br from-brand-50/70 via-white to-violet-50/60 px-8 py-10 dark:border-white/[0.06] dark:from-brand-900/25 dark:via-surface-dark-muted dark:to-violet-950/25 md:grid-cols-4">
           {[
             { to: 500, suffix: "+", label: "Airlines and providers" },
             { to: 15, suffix: "K+", label: "Routes tracked daily" },
@@ -213,7 +216,7 @@ export function HomePage() {
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 90}>
               <div className="text-center md:text-left">
-                <p className="font-display text-4xl font-extrabold text-ink dark:text-ink-inverse md:text-5xl">
+                <p className="text-gradient font-display text-4xl font-extrabold md:text-5xl">
                   <CountUp to={s.to} prefix={s.prefix ?? ""} suffix={s.suffix} />
                 </p>
                 <p className="mt-1.5 text-sm text-ink-muted dark:text-ink-inverse/60">{s.label}</p>
@@ -284,7 +287,7 @@ export function HomePage() {
                 </div>
                 <Link
                   to="/flights?from=New+Delhi+(DEL)&to=Mumbai+(BOM)&pax=1&cabin=economy"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-eco-dark transition-transform hover:scale-105"
+                  className="btn-shine inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-eco-dark transition-transform hover:scale-105"
                 >
                   Try a greener search
                   <ArrowRight size={15} aria-hidden />
@@ -308,7 +311,7 @@ export function HomePage() {
               Tell it a budget, a vibe, or a long weekend. It answers with real routes and one-tap
               searches.
             </p>
-            <Link to="/assistant" className="btn-primary rounded-full px-6 py-3">
+            <Link to="/assistant" className="btn-primary btn-shine rounded-full px-6 py-3">
               <Sparkles size={16} aria-hidden />
               Open the assistant
             </Link>
